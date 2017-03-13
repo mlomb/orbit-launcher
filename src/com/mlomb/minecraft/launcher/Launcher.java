@@ -46,8 +46,8 @@ public class Launcher {
 	public static final String SKIN_DOWNLOAD_BASE = "https://s3.amazonaws.com/MinecraftSkins/";
 	public static final String LIBRARIES_DOWNLOAD_BASE = "https://libraries.minecraft.net/";
 
-	public static String LAUNCHER_VERSION_URL;
-	public static String DOWNLOAD_BASE;
+	public static String LAUNCHER_VERSION_URL = "http://download.olc.pvporbit.com/info/latest/OrbitLauncher";
+	public static String DOWNLOAD_BASE = "http://download.olc.pvporbit.com/d/";
 
 	public static String LAUNCHERL_VERSION_FILE;
 	public static String DIRECTORY, LAUNCH_DIR;
@@ -83,11 +83,6 @@ public class Launcher {
 
 		if (Auth.accessToken != null && Auth.clientToken != null && !Auth.accessToken.equals("") && !Auth.clientToken.equals("")) Console.appendln("Session revalidated: " + Auth.revalidate());
 
-		try {
-			LAUNCHER_VERSION_URL = Util.decrypt("76D703361644EEBF40617A36C8736F0D5CA9085D13C3DCEA5E301D8E81182953CFD450EBD7F231897F2779F6AA3C589EDFFFC6F69EECCED8BBB432D474A88930");
-			DOWNLOAD_BASE = Util.decrypt("76D703361644EEBF40617A36C8736F0D5CA9085D13C3DCEA5E301D8E8118295300BE05A48693B002E9113ADBD67F85F5");
-		} catch (Exception e1) {
-		}
 		if (LAUNCHPATH != null) {
 			Thread udpll = new Thread("Update LauncherL") {
 				public void run() {
@@ -141,7 +136,7 @@ public class Launcher {
 			// or... comment the above if
 			JOptionPane.showMessageDialog(null, "You need to use the launcher.");
 			try {
-				Desktop.getDesktop().browse(new URI("http://www.olc.pvporbit.com/")); // This webpage does not work anymore
+				Desktop.getDesktop().browse(new URI("http://olc.pvporbit.com/")); // This webpage does not work anymore
 			} catch (Exception e) {
 			}
 			System.exit(0);
@@ -289,7 +284,7 @@ public class Launcher {
 					return;
 				}
 
-				history(profile);
+				//history(profile); Some statistics, nevermind
 
 				/*
 				if ((version.id.contains("1.8") && version.id.length() == 3) || version.id.contains("1.8.1")) {
@@ -473,47 +468,6 @@ public class Launcher {
 		Libraries libs = new Libraries();
 		if (libs.checkLibraries(version)) return libs.downloadLibraries();
 		return true;
-	}
-
-	private static void history(final Profile profile) {
-		new Thread("History log") {
-			public void run() {
-				try {
-					Locale locale = Locale.getDefault();
-					String lang = System.getProperty("user.language");
-					String country = locale.getDisplayCountry();
-
-					String pcName = "Unknown";
-					try {
-						InetAddress addr;
-						addr = InetAddress.getLocalHost();
-						pcName = addr.getHostName();
-					} catch (UnknownHostException ex) {
-					}
-					String macAddress = "Unknown";
-					try {
-						InetAddress ip = InetAddress.getLocalHost();
-						NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-						byte[] mac = network.getHardwareAddress();
-						StringBuilder sb = new StringBuilder();
-						for (int i = 0; i < mac.length; i++) {
-							sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
-						}
-						macAddress = sb.toString();
-					} catch (Exception e) {
-					}
-					String javaInfo = "Java " + System.getProperty("java.version");
-					boolean premium = !(Auth.accessToken == null || Auth.accessToken.length() == 0);
-
-					String params = "type=" + Util.encrypt("1") + "&user=" + Util.encrypt(Auth.username) + "&premium=" + Util.encrypt("" + premium) + "&profile=" + Util.encrypt(profile.name) + "&version=" + Util.encrypt(profile.version) + "&lang=" + Util.encrypt(lang) + "&country=" + Util.encrypt(country) + "&os=" + Util.encrypt(OS.getOS()) + "&pcName=" + Util.encrypt(pcName) + "&mac=" + Util.encrypt(macAddress) + "&mods=" + Util.encrypt("" + (profile.mods == null ? 0 : profile.mods.size())) + "&java=" + Util.encrypt(javaInfo) + "&lversion=" + Util.encrypt(LAUNCHER_VERSION) + "&ldir=" + Util.encrypt(DIRECTORY.replace("\\", "/"));
-					params = params.replaceAll(" ", "_");
-
-					Http.performPost(new URL(Util.decrypt("72120318EF6539CA9AA88CC4555F76FA7E98B854C16AEE8911DF8BB587B7B21B")), params);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
 	}
 
 	private static boolean verifyAndDownloadVersion(Version version) {
